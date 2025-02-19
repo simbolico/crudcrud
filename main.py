@@ -54,9 +54,8 @@ class SQLModelCRUDRouter(APIRouter):
             raise HTTPException(status_code=404, detail="Item not found")
         return instance
 
-    async def create(self, item: T = Body(...), session: Session = Depends(get_session)) -> T:
-        data = item.model_dump()
-        instance = self.model(**data)
+    async def create(self, item: dict = Body(...), session: Session = Depends(get_session)) -> T:
+        instance = self.model(**item)
         session.add(instance)
         try:
             session.commit()
@@ -100,10 +99,12 @@ class SQLModelCRUDRouter(APIRouter):
         session.commit()
         return instance
 
-class Item(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
+class ItemCreate(SQLModel):
     name: str
     description: Optional[str] = None
+
+class Item(ItemCreate, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
 
 class Object(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
