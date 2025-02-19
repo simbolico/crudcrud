@@ -54,8 +54,8 @@ class SQLModelCRUDRouter(APIRouter):
             raise HTTPException(status_code=404, detail="Item not found")
         return instance
 
-    async def create(self, item: T, session: Session = Depends(get_session)) -> T:
-        instance = self.model.from_orm(item)
+    async def create(self, item: T = Body(...), session: Session = Depends(get_session)) -> T:
+        instance = self.model(**item.dict())
         session.add(instance)
         try:
             session.commit()
