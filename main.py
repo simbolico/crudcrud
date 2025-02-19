@@ -65,13 +65,12 @@ class SQLModelCRUDRouter(APIRouter):
             session.rollback()
             raise HTTPException(status_code=422, detail=str(e))
 
-    async def update(self, item_id: Any, instance_data: T = Body(...), session: Session = Depends(get_session)) -> T:
+    async def update(self, item_id: Any, item: dict = Body(...), session: Session = Depends(get_session)) -> T:
         stmt = select(self.model).where(getattr(self.model, self._pk) == item_id)
         instance = session.exec(stmt).first()
         if not instance:
             raise HTTPException(status_code=404, detail="Item not found")
-        data = instance_data.dict(exclude_unset=True)
-        for key, value in data.items():
+        for key, value in item.items():
             setattr(instance, key, value)
         try:
             session.add(instance)
