@@ -55,7 +55,8 @@ class SQLModelCRUDRouter(APIRouter):
         return instance
 
     async def create(self, item: T = Body(...), session: Session = Depends(get_session)) -> T:
-        instance = self.model(**item.dict())
+        data = item.model_dump()
+        instance = self.model(**data)
         session.add(instance)
         try:
             session.commit()
