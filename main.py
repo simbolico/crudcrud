@@ -1,12 +1,13 @@
+# main.py
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
 from sqlmodel import SQLModel, Field, create_engine
-from crud_router import SQLModelCRUDRouter
+from .crucrud import SQLModelCRUDRouter  # Bring back the router
+# from crud import SQLCRUD  # Now we DON'T use SQLCRUD directly in main.py
 
 DATABASE_URL = "sqlite:///./test.db"
 engine = create_engine(DATABASE_URL, echo=False)
 
-# Define database models
 class ItemCreate(SQLModel):
     name: str
     description: str | None = None
@@ -19,12 +20,11 @@ class Object(SQLModel, table=True):
     name: str
     value: float
 
-# Create database tables
 SQLModel.metadata.create_all(engine)
 
 app = FastAPI()
 
-# Use the class method to create routers without the user having to define the session dependency.
+# ---  Using SQLModelCRUDRouter.from_engine ---
 item_router = SQLModelCRUDRouter.from_engine(model=Item, engine=engine, paginate=10)
 app.include_router(item_router)
 
