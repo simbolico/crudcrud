@@ -1,0 +1,7 @@
+
+fastapi>=0.112.0
+uvicorn>=0.23.2
+sqlmodel>=0.0.22
+sqlalchemy>=2.0.38
+pydantic>=2.10.6
+pytest>=7.4.4
