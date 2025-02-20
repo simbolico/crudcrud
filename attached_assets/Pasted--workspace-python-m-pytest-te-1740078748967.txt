@@ -1,0 +1,144 @@
+~/workspace$ python -m pytest
+=================================================================== test session starts ===================================================================
+platform linux -- Python 3.11.10, pytest-7.4.4, pluggy-1.4.0
+rootdir: /home/runner/workspace
+plugins: anyio-4.8.0
+collected 9 items / 1 error                                                                                                                               
+
+========================================================================= ERRORS ==========================================================================
+_______________________________________________________ ERROR collecting tests/test_crud_router.py ________________________________________________________
+ImportError while importing test module '/home/runner/workspace/tests/test_crud_router.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/nix/store/clx0mcir7qw8zk36zbr4jra789g3knf6-python3-3.11.10/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests/test_crud_router.py:7: in <module>
+    from crudcrud.router import SQLModelCRUDRouter
+E   ModuleNotFoundError: No module named 'crudcrud.router'
+================================================================= short test summary info =================================================================
+ERROR tests/test_crud_router.py
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+==================================================================== 1 error in 0.46s =====================================================================
+~/workspace$ python -m pytest
+=================================================================== test session starts ===================================================================
+platform linux -- Python 3.11.10, pytest-7.4.4, pluggy-1.4.0
+rootdir: /home/runner/workspace
+plugins: anyio-4.8.0
+collected 18 items                                                                                                                                        
+
+tests/test_crud.py .F.......                                                                                                                        [ 50%]
+tests/test_crud_router.py FFFFF.F.F                                                                                                                 [100%]
+
+======================================================================== FAILURES =========================================================================
+______________________________________________________________________ test_get_all _______________________________________________________________________
+
+session = <sqlmodel.orm.session.Session object at 0x7f5b6aa56f10>, test_model = <class 'conftest.TestModel'>
+
+    def test_get_all(session: Session, test_model):
+        crud = SQLCRUD(test_model, engine=session.get_bind())
+        item1_data = {"name": "Item 1", "value": 1.0}
+        item2_data = {"name": "Item 2", "value": 2.0}
+        crud.create(item1_data)
+        crud.create(item2_data)
+        all_items = crud.get_all()
+>       assert len(all_items) == 2
+E       AssertionError: assert 3 == 2
+E        +  where 3 = len([TestModel(name='Test Item', id=1, value=10.5), TestModel(name='Item 1', id=2, value=1.0), TestModel(name='Item 2', id=3, value=2.0)])
+
+tests/test_crud.py:23: AssertionError
+____________________________________________________________________ test_create_item _____________________________________________________________________
+
+client = <starlette.testclient.TestClient object at 0x7f5b6aa3fad0>, test_model = <class 'conftest.TestModel'>
+
+    def test_create_item(client, test_model):
+        response = client.post("/", json={"name": "Test Item", "value": 25.5})
+>       assert response.status_code == 200
+E       assert 404 == 200
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+tests/test_crud_router.py:22: AssertionError
+___________________________________________________________________ test_get_all_items ____________________________________________________________________
+
+client = <starlette.testclient.TestClient object at 0x7f5b6aa94350>, test_model = <class 'conftest.TestModel'>
+
+    def test_get_all_items(client, test_model):
+        client.post("/", json={"name": "Item 1", "value": 1.0})
+        client.post("/", json={"name": "Item 2", "value": 2.0})
+        response = client.get("/")
+>       assert response.status_code == 200
+E       assert 404 == 200
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+tests/test_crud_router.py:32: AssertionError
+______________________________________________________________________ test_get_item ______________________________________________________________________
+
+client = <starlette.testclient.TestClient object at 0x7f5b6aa87a50>, test_model = <class 'conftest.TestModel'>
+
+    def test_get_item(client, test_model):
+        # First, create an item to retrieve
+        create_response = client.post("/", json={"name": "Get Me", "value": 5.0})
+>       assert create_response.status_code == 200
+E       assert 404 == 200
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+tests/test_crud_router.py:42: AssertionError
+_________________________________________________________________ test_get_item_not_found _________________________________________________________________
+
+client = <starlette.testclient.TestClient object at 0x7f5b6aaafad0>, test_model = <class 'conftest.TestModel'>
+
+    def test_get_item_not_found(client, test_model):
+        response = client.get("/999")  # Non-existent ID
+        assert response.status_code == 404
+>       assert response.json()["detail"] == "Item with id 999 not found"
+E       AssertionError: assert 'Not Found' == 'Item with id 999 not found'
+E         - Item with id 999 not found
+E         + Not Found
+
+tests/test_crud_router.py:56: AssertionError
+____________________________________________________________________ test_update_item _____________________________________________________________________
+
+client = <starlette.testclient.TestClient object at 0x7f5b69fc0b90>, test_model = <class 'conftest.TestModel'>
+
+    def test_update_item(client, test_model):
+        create_response = client.post("/", json={"name": "Old Name", "value": 10.0})
+>       item_id = create_response.json()["id"]
+E       KeyError: 'id'
+
+tests/test_crud_router.py:60: KeyError
+____________________________________________________________________ test_delete_item _____________________________________________________________________
+
+client = <starlette.testclient.TestClient object at 0x7f5b6af1f890>, test_model = <class 'conftest.TestModel'>
+
+    def test_delete_item(client, test_model):
+        create_response = client.post("/", json={"name": "Delete Me", "value": 5.0})
+>       item_id = create_response.json()["id"]
+E       KeyError: 'id'
+
+tests/test_crud_router.py:74: KeyError
+__________________________________________________________________ test_delete_all_items __________________________________________________________________
+
+client = <starlette.testclient.TestClient object at 0x7f5b69ca3c50>, test_model = <class 'conftest.TestModel'>
+
+    def test_delete_all_items(client, test_model):
+        # Create a couple of items
+        client.post("/", json={"name": "Item 1", "value": 1.0})
+        client.post("/", json={"name": "Item 2", "value": 2.0})
+    
+        # Delete all items
+        delete_response = client.delete("/")
+>       assert delete_response.status_code == 200
+E       assert 404 == 200
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+tests/test_crud_router.py:94: AssertionError
+================================================================= short test summary info =================================================================
+FAILED tests/test_crud.py::test_get_all - AssertionError: assert 3 == 2
+FAILED tests/test_crud_router.py::test_create_item - assert 404 == 200
+FAILED tests/test_crud_router.py::test_get_all_items - assert 404 == 200
+FAILED tests/test_crud_router.py::test_get_item - assert 404 == 200
+FAILED tests/test_crud_router.py::test_get_item_not_found - AssertionError: assert 'Not Found' == 'Item with id 999 not found'
+FAILED tests/test_crud_router.py::test_update_item - KeyError: 'id'
+FAILED tests/test_crud_router.py::test_delete_item - KeyError: 'id'
+FAILED tests/test_crud_router.py::test_delete_all_items - assert 404 == 200
+============================================================== 8 failed, 10 passed in 0.66s ===============================================================
+~/workspace$ 
