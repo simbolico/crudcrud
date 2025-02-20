@@ -4,7 +4,7 @@ import pytest
 from fastapi.testclient import TestClient
 from fastapi import FastAPI
 from sqlmodel import Session
-from crudcrud.router import SQLModelCRUDRouter
+from crudcrud.crud_router import SQLModelCRUDRouter
 
 @pytest.fixture(scope="function")
 def app(test_model, engine):
