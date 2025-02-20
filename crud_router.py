@@ -1,6 +1,7 @@
-from typing import Any, List, Optional, Generator, Type, TypeVar
+from typing import Any, List, Optional, Generator, Type, TypeVar, Callable
 from fastapi import APIRouter, Depends, HTTPException, Body
 from sqlmodel import SQLModel, Session, select
+from sqlalchemy.engine import Engine
 
 T = TypeVar("T", bound=SQLModel)
 
@@ -8,7 +9,7 @@ class SQLModelCRUDRouter(APIRouter):
     def __init__(
         self,
         model: Type[T],
-        get_session: Any,
+        get_session: Callable[[], Generator[Session, None, None]],
         prefix: Optional[str] = None,
         tags: Optional[List[str]] = None,
         paginate: Optional[int] = None,
@@ -22,7 +23,7 @@ class SQLModelCRUDRouter(APIRouter):
         tags = tags or [model.__tablename__.capitalize()]
         super().__init__(prefix=prefix, tags=tags, **kwargs)
 
-        # Define endpoint closures to capture self and use its get_session dependency.
+        # Define endpoints as closures to capture self properly.
         async def get_all_endpoint(skip: int = 0, limit: Optional[int] = None, session: Session = Depends(self.get_session)):
             return await self.get_all(skip, limit, session)
 
@@ -105,3 +106,22 @@ class SQLModelCRUDRouter(APIRouter):
         session.delete(instance)
         session.commit()
         return instance
+
+    @classmethod
+    def from_engine(
+        cls,
+        model: Type[T],
+        engine: Engine,
+        prefix: Optional[str] = None,
+        tags: Optional[List[str]] = None,
+        paginate: Optional[int] = None,
+        **kwargs: Any
+    ) -> "SQLModelCRUDRouter":
+        """
+        Create a CRUD router from an SQLAlchemy engine. This method creates a session dependency internally.
+        """
+        def get_session() -> Generator[Session, None, None]:
+            with Session(engine) as session:
+                yield session
+
+        return cls(model, get_session, prefix=prefix, tags=tags, paginate=paginate, **kwargs)
