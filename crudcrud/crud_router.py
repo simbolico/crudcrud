@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Body
 from sqlmodel import SQLModel, Session, select
 from sqlalchemy.engine import Engine
 
-from .crud import SQLCRUD  # Import from the same package
+from .crud import SQLModelCRUD  # Import from the same package
 from .exceptions import ItemNotFoundException  # Import custom exception
 
 T = TypeVar("T", bound=SQLModel)
@@ -17,7 +17,7 @@ class SQLModelCRUDRouter(APIRouter):
         prefix: Optional[str] = None,
         tags: Optional[List[str]] = None,
         paginate: Optional[int] = None,
-        get_crud: Optional[Callable[[Type[T]], SQLCRUD[T]]] = None,
+        get_crud: Optional[Callable[[Type[T]], SQLModelCRUD[T]]] = None,
         **kwargs: Any,
     ) -> None:
         self.model: Type[T] = model
@@ -28,7 +28,7 @@ class SQLModelCRUDRouter(APIRouter):
         tags = tags or [model.__tablename__.capitalize()]
         super().__init__(prefix=prefix, tags=tags, **kwargs)
 
-        self.crud: SQLCRUD[T] = get_crud(model) if get_crud else None
+        self.crud: SQLModelCRUD[T] = get_crud(model) if get_crud else None
 
         if self.crud is None:
             # This logic should never be reached if from_engine is used correctly.
@@ -94,9 +94,9 @@ class SQLModelCRUDRouter(APIRouter):
         **kwargs: Any,
     ) -> "SQLModelCRUDRouter":
         """
-        Create a CRUD router from an SQLAlchemy engine, using SQLCRUD.
+        Create a CRUD router from an SQLAlchemy engine, using SQLModelCRUD.
         """
-        crud = SQLCRUD(model, engine=engine)
+        crud = SQLModelCRUD(model, engine=engine)
         def get_session() -> Generator[Session, None, None]:
             with Session(engine) as session:
                 yield session

@@ -9,7 +9,7 @@ from .exceptions import ItemNotFoundException, CrudException
 T = TypeVar("T", bound=SQLModel)
 
 
-class SQLCRUD(Generic[T]):
+class SQLModelCRUD(Generic[T]):
     def __init__(self, model: Type[T], engine: Optional[Engine] = None) -> None:
         self.model = model
         self._pk: str = list(model.__table__.primary_key.columns.keys())[0]
@@ -18,7 +18,7 @@ class SQLCRUD(Generic[T]):
     def _get_session(self) -> Session:
         if self.engine is None:
             raise ValueError(
-                "Engine must be provided during class instanciation (e.g. my_crud = SQLCRUD(MyModel, engine=my_engine)) or set explicitly (e.g. my_crud.engine = my_engine)."
+                "Engine must be provided during class instanciation (e.g. my_crud = SQLModelCRUD(MyModel, engine=my_engine)) or set explicitly (e.g. my_crud.engine = my_engine)."
             )
         return Session(self.engine)
 

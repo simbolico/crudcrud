@@ -1,4 +1,5 @@
 run = ["uvicorn", "main:app", "--host", "0.0.0.0", "--reload"]
+# run = ["python", "-m", "pytest"]
 modules = ["python-3.11"]
 
 hidden = [".pythonlibs"]
@@ -13,3 +14,14 @@ deploymentTarget = "cloudrun"
 [[ports]]
 localPort = 8000
 externalPort = 80
+
+[workflows]
+
+[[workflows.workflow]]
+name = "pytest"
+mode = "sequential"
+author = 6450439
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python -m pytest"

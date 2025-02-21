@@ -1,0 +1,3 @@
+.ccignore
+main.py
+test.db

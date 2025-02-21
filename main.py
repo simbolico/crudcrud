@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
 from sqlmodel import SQLModel, Field, create_engine
 from crudcrud import SQLModelCRUDRouter  # Import from installed package
-# from crud import SQLCRUD  # Now we DON'T use SQLCRUD directly in main.py
+# from crud import SQLModelCRUD  # Now we DON'T use SQLModelCRUD directly in main.py
 
 DATABASE_URL = "sqlite:///./test.db"
 engine = create_engine(DATABASE_URL, echo=False)
