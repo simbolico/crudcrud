@@ -1,3 +1,10 @@
 .ccignore
 main.py
 test.db
+dist/
+generated-icon.png
+.git/
+.pytest_cache/
+__pycache__/
+.db
+main.py
