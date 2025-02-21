@@ -2,8 +2,6 @@
 
 [![PyPI version](https://badge.fury.io/py/crudcrud.svg)](https://badge.fury.io/py/crudcrud)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![Tests](https://github.com/<your_username>/<your_repo_name>/actions/workflows/test.yml/badge.svg)](https://github.com/<your_username>/<your_repo_name>/actions/workflows/test.yml)  <!--  Replace with your actual GitHub Actions badge URL -->
 
 `crudcrud` is a minimalist, yet powerful, Python library designed to streamline CRUD (Create, Read, Update, Delete) operations in FastAPI applications using SQLModel.  It aims for simplicity, excellent developer experience (DX), and a best-in-class onboarding experience.  It focuses on getting you up and running quickly, without sacrificing flexibility or control.
 
